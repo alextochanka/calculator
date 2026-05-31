@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты расчёта трёхкорпусной выпарной установки</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Результаты расчёта трёхкорпусной выпарной установки</h1>
+        
+        <!-- Кнопки экспорта и нового расчёта -->
+        <div class="d-flex justify-content-between mb-4 flex-wrap">
+            <div class="mb-2 mb-md-0">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">← Новый расчёт</a>
+            </div>
+            <div>
+                <a href="{{ url_for('export_csv') }}" class="btn btn-success btn-export">📊 Экспорт в CSV</a>
+            </div>
+        </div>
+        
+        <!-- Основные параметры -->
+        <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Исходные данные</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="border rounded p-2 h-100 bg-light">
+                        <small class="text-muted">Расход исходного раствора</small>
+                        <div class="fw-bold">{{ format_number(input_data.G_n, 2) }} кг/с</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="border rounded p-2 h-100 bg-light">
+                        <small class="text-muted">Начальная концентрация</small>
+                        <div class="fw-bold">{{ format_number(input_data.x_n * 100, 1) }} %</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="border rounded p-2 h-100 bg-light">
+                        <small class="text-muted">Конечная концентрация</small>
+                        <div class="fw-bold">{{ format_number(input_data.x_k * 100, 1) }} %</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="border rounded p-2 h-100 bg-light">
+                        <small class="text-muted">Давление греющего пара</small>
+                        <div class="fw-bold">{{ format_number(input_data.P_gp, 2) }} МПа</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="border rounded p-2 h-100 bg-light">
+                        <small class="text-muted">Начальная температура раствора</small>
+                        <div class="fw-bold">{{ format_number(input_data.t_n, 1) }} °C</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="border rounded p-2 h-100 bg-light">
+                        <small class="text-muted">Давление в конденсаторе</small>
+                        <div class="fw-bold">{{ format_number(input_data.P_bc, 3) }} МПа</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="border rounded p-2 h-100 bg-light">
+                        <small class="text-muted">Температура охлаждающей воды</small>
+                        <div class="fw-bold">{{ format_number(input_data.t_cold_water, 1) }} °C</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+        <!-- Результаты по корпусам -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Технологические параметры по корпусам</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-results">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Параметр</th>
+                                <th>Корпус 1</th>
+                                <th>Корпус 2</th>
+                                <th>Корпус 3</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Давление P, МПа</strong></td>
+                                <td>{{ format_number(results.P[0], 3) }}</td>
+                                <td>{{ format_number(results.P[1], 3) }}</td>
+                                <td>{{ format_number(results.P[2], 3) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Температура t, °C</strong></td>
+                                <td>{{ format_number(results.t[0], 1) }}</td>
+                                <td>{{ format_number(results.t[1], 1) }}</td>
+                                <td>{{ format_number(results.t[2], 1) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Концентрация x, %</strong></td>
+                                <td>{{ format_number(results.x[0] * 100, 2) }}</td>
+                                <td>{{ format_number(results.x[1] * 100, 2) }}</td>
+                                <td class="value-good">{{ format_number(results.x[2] * 100, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Расход раствора G, кг/с</strong></td>
+                                <td>{{ format_number(results.G[0], 3) }}</td>
+                                <td>{{ format_number(results.G[1], 3) }}</td>
+                                <td>{{ format_number(results.G[2], 3) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Выпарено воды W, кг/с</strong></td>
+                                <td>{{ format_number(results.W[0], 3) }}</td>
+                                <td>{{ format_number(results.W[1], 3) }}</td>
+                                <td>{{ format_number(results.W[2], 3) }}</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td><strong>Тепловая нагрузка Q, кВт</strong></td>
+                                <td>{{ format_number(results.Q[0], 1) }}</td>
+                                <td>{{ format_number(results.Q[1], 1) }}</td>
+                                <td>{{ format_number(results.Q[2], 1) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Коэффициент теплопередачи K, Вт/(м²·К)</strong></td>
+                                <td>{{ format_number(results.K[0], 0) }}</td>
+                                <td>{{ format_number(results.K[1], 0) }}</td>
+                                <td>{{ format_number(results.K[2], 0) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Площадь поверхности F, м²</strong></td>
+                                <td>{{ format_number(results.F[0], 1) }}</td>
+                                <td>{{ format_number(results.F[1], 1) }}</td>
+                                <td>{{ format_number(results.F[2], 1) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Температурный напор Δt, °C</strong></td>
+                                <td>{{ format_number(results.delta_t[0], 1) }}</td>
+                                <td>{{ format_number(results.delta_t[1], 1) }}</td>
+                                <td>{{ format_number(results.delta_t[2], 1) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Физико-химические свойства -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Физико-химические свойства раствора</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-results">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Свойство</th>
+                                <th>Корпус 1</th>
+                                <th>Корпус 2</th>
+                                <th>Корпус 3</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Плотность ρ, кг/м³</strong></td>
+                                <td>{{ format_number(results.rho[0], 1) }}</td>
+                                <td>{{ format_number(results.rho[1], 1) }}</td>
+                                <td>{{ format_number(results.rho[2], 1) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Вязкость μ, мПа·с</strong></td>
+                                <td>{{ format_number(results.mu[0] * 1000, 2) }}</td>
+                                <td>{{ format_number(results.mu[1] * 1000, 2) }}</td>
+                                <td>{{ format_number(results.mu[2] * 1000, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Теплоёмкость cp, кДж/(кг·К)</strong></td>
+                                <td>{{ format_number(results.cp[0], 3) }}</td>
+                                <td>{{ format_number(results.cp[1], 3) }}</td>
+                                <td>{{ format_number(results.cp[2], 3) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Теплопроводность λ, Вт/(м·К)</strong></td>
+                                <td>{{ format_number(results.lam[0], 3) }}</td>
+                                <td>{{ format_number(results.lam[1], 3) }}</td>
+                                <td>{{ format_number(results.lam[2], 3) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Температурная депрессия Δ, °C</strong></td>
+                                <td>{{ format_number(results.depression[0], 2) }}</td>
+                                <td>{{ format_number(results.depression[1], 2) }}</td>
+                                <td>{{ format_number(results.depression[2], 2) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Итоговые показатели -->
+        <div class="card">
+            <div class="card-header bg-success">
+                <h5 class="mb-0 text-white">Итоговые показатели установки</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="alert alert-info text-center">
+                            <h6>Общее количество выпаренной воды</h6>
+                            <h3>{{ format_number(results.W_total, 3) }} кг/с</h3>
+                            <small>{{ format_number(results.W_total * 3600, 0) }} кг/ч</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="alert alert-primary text-center">
+                            <h6>Расход греющего пара</h6>
+                            <h3>{{ format_number(results.D_gp, 3) }} кг/с</h3>
+                            <small>{{ format_number(results.D_gp * 3600, 0) }} кг/ч</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="alert alert-warning text-center">
+                            <h6>Удельный расход пара</h6>
+                            <h3>{{ format_number(results.ud_par, 3) }} кг/кг</h3>
+                            <small>на 1 кг выпаренной воды</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Вспомогательное оборудование -->
+        <h4 class="section-title">Вспомогательное оборудование</h4>
+        
+        {% if aux_results %}
+        <!-- Барометрический конденсатор -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Барометрический конденсатор смешения</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Расход охлаждающей воды:</th>
+                                <td>{{ format_number(aux_results.bc.G_cooling_water, 2) }} кг/с
+                            </tr>
+                            <tr>
+                                <th>Диаметр конденсатора:</th>
+                                <td>{{ format_number(aux_results.bc.D_cond * 1000, 0) }} мм
+                            </tr>
+                            <tr>
+                                <th>Конечная температура смеси:</th>
+                                <td>{{ format_number(aux_results.bc.t_out, 1) }} °C
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Диаметр барометрической трубы:</th>
+                                <td>{{ format_number(aux_results.bc.d_barometric * 1000, 0) }} мм
+                            </tr>
+                            <tr>
+                                <th>Высота барометрической трубы:</th>
+                                <td>{{ format_number(aux_results.bc.H_barometric, 1) }} м
+                            </tr>
+                            <tr>
+                                <th>Скорость воды в трубе:</th>
+                                <td>{{ format_number(aux_results.bc.w_water, 2) }} м/с
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Вакуум-насос -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Вакуум-насос</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <strong>Производительность:</strong><br>
+                        <span class="h4">{{ format_number(aux_results.vp.V_air_min, 1) }}</span> м³/мин
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <strong>Массовый расход воздуха:</strong><br>
+                        {{ format_number(aux_results.vp.G_air, 4) }} кг/с
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <strong>Остаточное давление:</strong><br>
+                        {{ format_number(aux_results.vp.residual_pressure / 1000, 1) }} кПа
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">Рекомендуемый тип: ВВН-{{ (aux_results.vp.V_air_min / 1.5) | round }}</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Предварительный теплообменник -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Предварительный теплообменник</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <strong>Площадь поверхности:</strong><br>
+                        {{ format_number(aux_results.ph.F_preheater, 1) }} м²
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <strong>Коэффициент теплопередачи:</strong><br>
+                        {{ format_number(aux_results.ph.K_preheater, 0) }} Вт/(м²·К)
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <strong>Расход греющего пара:</strong><br>
+                        {{ format_number(aux_results.ph.D_steam_preheater, 3) }} кг/с
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <strong>Средняя разность температур:</strong> {{ format_number(aux_results.ph.delta_t_mid, 1) }} °C
+                </div>
+            </div>
+        </div>
+        
+        <!-- Насосы -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Насосное оборудование</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="alert alert-secondary">
+                            <h6>Насос подачи исходного раствора</h6>
+                            <table class="table table-sm mb-0">
+                                <tr><th>Производительность:</th><td>{{ format_number(aux_results.pumps.feed.Q_vol * 1000, 1) }} л/с</td></tr>
+                                <tr><th>Напор:</th><td>{{ format_number(aux_results.pumps.feed.H_pump, 1) }} м вод. ст.</td></tr>
+                                <tr><th>Мощность:</th><td>{{ format_number(aux_results.pumps.feed.N_hydr, 2) }} кВт</td></tr>
+                                <tr><th>Рекомендуемый тип:</th><td>{{ aux_results.pumps.feed.type }}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="alert alert-secondary">
+                            <h6>Насос отвода упаренного раствора</h6>
+                            <table class="table table-sm mb-0">
+                                <tr><th>Производительность:</th><td>{{ format_number(aux_results.pumps.product.Q_vol * 1000, 1) }} л/с</td></tr>
+                                <tr><th>Напор:</th><td>{{ format_number(aux_results.pumps.product.H_pump, 1) }} м вод. ст.</td></tr>
+                                <tr><th>Мощность:</th><td>{{ format_number(aux_results.pumps.product.N_hydr, 2) }} кВт</td></tr>
+                                <tr><th>Рекомендуемый тип:</th><td>{{ aux_results.pumps.product.type }}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Трубопроводы -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Основные трубопроводы</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Паропровод греющего пара:</strong>
+                        <ul>
+                            <li>Рекомендуемый диаметр: {{ format_number(aux_results.pipelines.steam.selected, 0) }} мм</li>
+                            <li>Диапазон: {{ format_number(aux_results.pipelines.steam.d_min, 0) }} - {{ format_number(aux_results.pipelines.steam.d_max, 0) }} мм</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Трубопровод раствора:</strong>
+                        <ul>
+                            <li>Рекомендуемый диаметр: {{ format_number(aux_results.pipelines.solution.selected, 0) }} мм</li>
+                            <li>Диапазон: {{ format_number(aux_results.pipelines.solution.d_min, 0) }} - {{ format_number(aux_results.pipelines.solution.d_max, 0) }} мм</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Тепловой баланс -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Тепловой баланс установки</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <h6>Подведённая теплота</h6>
+                            <h4>{{ format_number(aux_results.thermal.Q_total, 1) }} кВт</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <h6>Потери тепла</h6>
+                            <h4>{{ format_number(aux_results.thermal.Q_loss, 1) }} кВт</h4>
+                            <small>(≈3%)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <h6>Термический КПД</h6>
+                            <h4>{{ format_number(aux_results.thermal.efficiency, 1) }}%</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Графики - без лишних подписей -->
+    <h4 class="section-title">Графическая визуализация</h4>
+
+    <div class="plots-grid">
+        <!-- График 1: Температура и концентрация -->
+        {% if plots.temp_conc %}
+        <div class="plot-card">
+            <div class="plot-container">
+                <img src="data:image/png;base64,{{ plots.temp_conc }}" alt="Температуры и концентрации" class="plot-image">
+            </div>
+        </div>
+        {% endif %}
+    
+        <!-- График 2: Тепловые нагрузки -->
+        {% if plots.heat_load %}
+        <div class="plot-card">
+            <div class="plot-container">
+                <img src="data:image/png;base64,{{ plots.heat_load }}" alt="Тепловые нагрузки" class="plot-image">
+            </div>
+        </div>
+        {% endif %}
+    
+        <!-- График 3: Коэффициенты теплопередачи -->
+        {% if plots.k_coef %}
+        <div class="plot-card">
+            <div class="plot-container">
+                <img src="data:image/png;base64,{{ plots.k_coef }}" alt="Коэффициенты теплопередачи" class="plot-image">
+            </div>
+        </div>
+        {% endif %}
+    
+        <!-- График 4: Распределение выпаренной воды -->
+        {% if plots.pie %}
+        <div class="plot-card">
+            <div class="plot-container">
+                <img src="data:image/png;base64,{{ plots.pie }}" alt="Распределение выпаренной воды" class="plot-image">
+            </div>
+        </div>
+        {% endif %}
+    
+        <!-- График 5: Физико-химические свойства -->
+        {% if plots.properties %}
+        <div class="plot-card">
+            <div class="plot-container">
+                <img src="data:image/png;base64,{{ plots.properties }}" alt="Физико-химические свойства" class="plot-image">
+            </div>
+        </div>
+        {% endif %}
+    
+        <!-- График 6: Расходы по корпусам -->
+        {% if plots.flows %}
+        <div class="plot-card">
+            <div class="plot-container">
+                <img src="data:image/png;base64,{{ plots.flows }}" alt="Расходы" class="plot-image">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+        
+        <footer class="footer">
+            <p class="text-muted">Программа разработана для инженерных расчётов выпарных установок непрерывного действия</p>
+        </footer>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

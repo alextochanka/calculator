@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Методика расчёта - Трёхкорпусная выпарная установка</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Заголовок -->
+        <div class="card">
+            <div class="card-header text-center">
+                <h3><i class="fas fa-flask me-2"></i>Методика расчёта трёхкорпусной вакуум-выпарной установки</h3>
+                <p class="mb-0 mt-2">непрерывного действия</p>
+            </div>
+        </div>
+
+        <!-- Навигация -->
+        <div class="card">
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                            <i class="fas fa-info-circle me-1"></i>Об установке
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="schematic-tab" data-bs-toggle="tab" data-bs-target="#schematic" type="button" role="tab">
+                            <i class="fas fa-project-diagram me-1"></i>Схема установки
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="symbols-tab" data-bs-toggle="tab" data-bs-target="#symbols" type="button" role="tab">
+                            <i class="fas fa-calculator me-1"></i>Условные обозначения
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="equipment-tab" data-bs-toggle="tab" data-bs-target="#equipment" type="button" role="tab">
+                            <i class="fas fa-microchip me-1"></i>Оборудование
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content mt-4" id="myTabContent">
+                    <!-- Вкладка: Об установке -->
+                    <div class="tab-pane fade show active" id="info" role="tabpanel">
+                        <h4><i class="fas fa-industry me-2"></i>{{ installation_info.name }}</h4>
+                        <p class="lead">{{ installation_info.description }}</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="highlight">
+                                    <h5><i class="fas fa-arrow-right me-2"></i>Прямоточная схема (1-2-3)</h5>
+                                    <p>Раствор и пар движутся в одном направлении. Исходный раствор последовательно проходит корпуса 1 → 2 → 3, пар движется от первого корпуса к конденсатору.</p>
+                                    <ul>
+                                        <li>Простота конструкции</li>
+                                        <li>Самотёчное движение раствора</li>
+                                        <li>Меньше коррозионный износ</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="highlight">
+                                    <h5><i class="fas fa-exchange-alt me-2"></i>Смешанная схема (2-3-1)</h5>
+                                    <p>Комбинированная схема: прямоточный участок (2-3) и противоточный (3-1). Раствор подаётся во второй корпус, затем в третий, после чего возвращается в первый.</p>
+                                    <ul>
+                                        <li>Более высокая конечная концентрация</li>
+                                        <li>Лучшее использование тепла</li>
+                                        <li>Сложнее в управлении</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h5><i class="fas fa-check-circle me-2"></i>Преимущества установки</h5>
+                            <ul>
+                                {% for adv in installation_info.advantages %}
+                                <li>{{ adv }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h5><i class="fas fa-chart-line me-2"></i>Основные параметры работы</h5>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Параметр</th>
+                                    <th>Диапазон</th>
+                                    <th>Примечание</th>
+                                </tr>
+                                <tr>
+                                    <td>Давление греющего пара</td>
+                                    <td>0.1 - 1.0 МПа</td>
+                                    <td>Насыщенный водяной пар</td>
+                                </tr>
+                                <tr>
+                                    <td>Вакуум в конденсаторе</td>
+                                    <td>0.01 - 0.1 МПа</td>
+                                    <td>Создаётся барометрическим конденсатором</td>
+                                </tr>
+                                <tr>
+                                    <td>Температура кипения</td>
+                                    <td>50 - 140 °C</td>
+                                    <td>Зависит от давления</td>
+                                </tr>
+                                <tr>
+                                    <td>Концентрация раствора</td>
+                                    <td>5 - 60 %</td>
+                                    <td>В зависимости от продукта</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Вкладка: Схема установки -->
+                    <div class="tab-pane fade" id="schematic" role="tabpanel">
+                        <h4><i class="fas fa-project-diagram me-2"></i>Принципиальная схема трёхкорпусной выпарной установки</h4>
+                        <div class="text-center">
+                            <img src="{{ url_for('static', filename='img/schematic.png') }}" 
+                                 alt="Схема выпарной установки" 
+                                 class="schematic-img"
+                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400?text=Схема+выпарной+установки';">
+                            <p class="text-muted mt-2"><small>Рисунок 1 - Принципиальная схема трёхкорпусной выпарной установки прямоточного типа</small></p>
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <h5><i class="fas fa-tint me-2"></i>Описание работы прямоточной схемы (1-2-3)</h5>
+                            <p>Исходный слабоконцентрированный раствор из промежуточной ёмкости (1) центробежным насосом (2) поступает в теплообменник (3), где подогревается до температуры, близкой к кипению, и далее в первый корпус выпарной установки (4).</p>
+                            <p>Первый корпус установки подогревается свежим водяным паром из ТЭЦ. Вторичный пар, образующийся при концентрировании раствора в первом корпусе, направляется во второй корпус (5). Сюда же поступает частично концентрированный раствор из первого корпуса.</p>
+                            <p>Аналогично третий корпус (6) обогревается вторичным паром из второго корпуса. В нём происходит дальнейшее концентрирование раствора, поступившего из второго корпуса.</p>
+                            <p>Самопроизвольный перенос раствора и вторичного пара в последующие корпуса обеспечивается общим перепадом давления, возникающим в результате создания вакуума конденсацией вторичного пара последнего корпуса в барометрическом конденсаторе смешения (7).</p>
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <h5><i class="fas fa-random me-2"></i>Описание работы смешанной схемы G (2-3-1)</h5>
+                            <p>Установка смешанного типа содержит прямоточный участок (2-3) и противоточный (3-1). Греющий пар всегда перемещается в одном направлении (1-2-3) с соответствующим падением давления.</p>
+                            <p>Первичный слабоконцентрированный раствор из сборника (1), пройдя предварительный подогрев в промежуточном теплообменнике (3), с помощью центробежного насоса (2) подаётся во второй корпус (5), где концентрируется и самотёком поступает в третий корпус (6), откуда с использованием повышающего давления центробежного насоса и подогревателя раствора поступает в первый корпус (4).</p>
+                            <p>Функции барометрического конденсатора, ловушки для неконденсируемых газов, вакуум-насоса и остального дополнительного оборудования аналогичны прямоточной схеме.</p>
+                        </div>
+                    </div>
+
+                    <!-- Вкладка: Условные обозначения -->
+                    <div class="tab-pane fade" id="symbols" role="tabpanel">
+                        <h4><i class="fas fa-calculator me-2"></i>Основные условные обозначения</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-sm symbol-table">
+                                    <thead class="table-light">
+                                        <tr><th>Обозначение</th><th>Наименование</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for symbol, name in symbols.items() %}
+                                        <tr>
+                                            <td><code>{{ symbol }}</code></td>
+                                            <td>{{ name }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="mt-3">Индексы</h5>
+                                <table class="table table-sm symbol-table">
+                                    <thead class="table-light">
+                                        <tr><th>Индекс</th><th>Значение</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for idx, meaning in indices.items() %}
+                                        <tr>
+                                            <td><code>{{ idx }}</code></td>
+                                            <td>{{ meaning }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Вкладка: Оборудование -->
+                    <div class="tab-pane fade" id="equipment" role="tabpanel">
+                        <h4><i class="fas fa-microchip me-2"></i>Состав оборудования</h4>
+                        <div class="row">
+                            {% for num, name in equipment.items() %}
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge-equipment" style="min-width: 30px; text-align: right;">{{ num }}</span>
+                                    <span class="ms-2">{{ name }}</span> 
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="highlight mt-3">
+                            <h5><i class="fas fa-chart-simple me-2"></i>Ключевые особенности расчёта</h5>
+                            <ul>
+                                <li>Расчёт основан на уравнениях материального и теплового балансов</li>
+                                <li>Учитываются температурные депрессии (физико-химическая, гидростатическая, гидродинамическая)</li>
+                                <li>Определение коэффициентов теплопередачи для каждого корпуса</li>
+                                <li>Расчёт вспомогательного оборудования: барометрический конденсатор, вакуум-насос, теплообменники, насосы</li>
+                                <li>Технико-экономические показатели: экономичность, удельный расход пара, паропроизводительность</li>
+                            </ul>               
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопка возврата -->
+        <div class="text-center">
+            <a href="{{ url_for('index') }}" class="btn btn-back">
+                <i class="fas fa-arrow-left me-2"></i>Вернуться к расчёту
+            </a>
+        </div>
+
+        <footer>
+            <p class="small">"Расчет трехкорпусной выпарной установки"</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
