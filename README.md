@@ -12,15 +12,20 @@
 Язык разметки: HTML/CSS.
 Язык скриптов: JS.
 
-# Как запустить? #
-1. Клонируйте репозиторий:
-git clone https://github.com/alextochanka/calculator
-cd calculator
-2 Создайте и активируйте виртуальное окружение:
-python -m venv venv
-source venv/bin/activate
-3 Установите необходимые библиотеки:
-pip install -r requirements.txt
+# Установка #
+1.  Клонируйте репозиторий:
+    ```bash
+    git clone https://github.com/alextochanka/TechInstHub
+    cd calculator
+    ```
+2.  Создайте и активируйте виртуальное окружение:
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    ```
+3.  Установите необходимые библиотеки:
+    ```bash
+    pip install -r requirements.txt
 
 # Структура проекта #
 1. templates - папка с HTML.
