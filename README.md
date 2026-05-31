@@ -28,7 +28,7 @@
     ```bash
     pip install -r requirements.txt
 
-4   Запуск:
+4.  Запуск приложения:
     ```bash
     python main.py
 
